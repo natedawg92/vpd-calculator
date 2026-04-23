@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vape Tax 2026 Budgeter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #f8fafc;
+        font-family: sans-serif;
+        margin: 0;
+      }
+      .card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #f1f5f9;
+      }
+      .hidden {
+        display: none;
+      }
+      @layer components {
+        .input-field {
+          border: 1px solid #cbd5e1;
+          border-radius: 0.5rem;
+          padding: 0.75rem;
+          width: 100%;
+          transition: all 0.2s;
+        }
+        .input-field:focus {
+          border-color: #2563eb;
+          outline: 2px solid #3b82f6;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 min-h-screen text-slate-900 pb-12">
+    <nav class="bg-white border-b border-slate-200 py-4 mb-8 sticky top-0 z-50">
+      <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
+        <h1 class="text-xl font-black tracking-tight text-blue-600">
+          VAPE TAX <span class="text-slate-400">2026</span>
+        </h1>
+        <div class="flex gap-4">
+          <button
+            onclick="switchTab('quick')"
+            id="tab-quick"
+            class="text-sm font-bold text-blue-600 border-b-2 border-blue-600 pb-1"
+          >
+            Quick Check
+          </button>
+          <button
+            onclick="switchTab('list')"
+            id="tab-list"
+            class="text-sm font-bold text-slate-400 hover:text-blue-600 pb-1 transition-all"
+          >
+            My List
+          </button>
+        </div>
+      </div>
+    </nav>
+    <main class="max-w-4xl mx-auto px-4">
+      <section id="section-quick" class="space-y-6">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold mb-2">Price Quick-Check</h2>
+          <p class="text-slate-500 text-sm">
+            Calculate 2026 prices for a single item.
+          </p>
+        </div>
+        <div class="card max-w-md mx-auto">
+          <div class="space-y-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-slate-600"
+                >Total Volume (ml)</label
+              >
+              <input
+                type="number"
+                id="q-vol"
+                class="input-field"
+                placeholder="e.g. 40"
+                oninput="calculateQuick()"
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold text-slate-600"
+                >Current Price (£)</label
+              >
+              <input
+                type="number"
+                id="q-price"
+                class="input-field"
+                placeholder="e.g. 10.00"
+                oninput="calculateQuick()"
+              />
+            </div>
+            <div
+              class="mt-8 pt-6 border-t border-dashed border-slate-200 space-y-4"
+            >
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-medium"
+                  >Estimated New Price</span
+                >
+                <span id="res-total" class="text-3xl font-black text-slate-900"
+                  >£0.00</span
+                >
+              </div>
+              <div class="bg-blue-50 rounded-xl p-4 space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-slate-600">Pure Duty Increase</span>
+                  <span id="res-duty" class="font-bold text-blue-700"
+                    >+£0.00</span
+                  >
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-slate-600">VAT on Duty (20%)</span>
+                  <span id="res-vat" class="font-bold text-blue-700"
+                    >+£0.00</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="section-list" class="hidden space-y-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold">Shopping List</h2>
+          <button
+            onclick="addRow()"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm"
+          >
+            + Add Item
+          </button>
+        </div>
+        <div class="card overflow-x-auto p-0">
+          <table class="w-full text-left border-collapse min-w-[450px]">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="p-3 text-xs font-bold text-slate-500 uppercase">
+                  Product
+                </th>
+                <th class="p-3 text-xs font-bold text-slate-500 uppercase">
+                  ml
+                </th>
+                <th class="p-3 text-xs font-bold text-slate-500 uppercase">
+                  Cost (£)
+                </th>
+                <th
+                  class="p-3 text-xs font-bold text-slate-500 uppercase text-blue-600"
+                >
+                  2026 Est.
+                </th>
+                <th class="p-3"></th>
+              </tr>
+            </thead>
+            <tbody id="list-body"></tbody>
+          </table>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="card bg-slate-900 p-4 text-white">
+            <p class="text-xs font-bold uppercase text-slate-400">Current</p>
+            <h3 id="list-total-old" class="text-xl font-bold">£0.00</h3>
+          </div>
+          <div class="card bg-blue-600 p-4 text-white">
+            <p class="text-xs font-bold uppercase text-blue-200">New</p>
+            <h3 id="list-total-new" class="text-xl font-bold">£0.00</h3>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      let rows = [];
+      const calculateNewPrice = (p, v) =>
+        v ? (p / 1.2 + (v / 10) * 2.2) * 1.2 : p;
+      function switchTab(t) {
+        ["quick", "list"].forEach((k) => {
+          document
+            .getElementById("section-" + k)
+            .classList.toggle("hidden", k !== t);
+          document.getElementById("tab-" + k).className =
+            k === t
+              ? "text-sm font-bold text-blue-600 border-b-2 border-blue-600 pb-1"
+              : "text-sm font-bold text-slate-400 pb-1";
+        });
+        if (t === "list" && rows.length === 0)
+          for (let i = 0; i < 3; i++) addRow();
+      }
+      function calculateQuick() {
+        const v = parseFloat(document.getElementById("q-vol").value) || 0;
+        const p = parseFloat(document.getElementById("q-price").value) || 0;
+        const d = (v / 10) * 2.2;
+        document.getElementById("res-total").innerText =
+          "£" + calculateNewPrice(p, v).toFixed(2);
+        document.getElementById("res-duty").innerText = "+£" + d.toFixed(2);
+        document.getElementById("res-vat").innerText =
+          "+£" + (d * 0.2).toFixed(2);
+      }
+      function addRow() {
+        const id = Date.now() + Math.random();
+        rows.push({ id, name: "", vol: 0, price: 0 });
+        renderList();
+      }
+      function updateRow(id, f, v) {
+        const r = rows.find((x) => x.id === id);
+        if (r) {
+          r[f] = f === "name" ? v : parseFloat(v) || 0;
+          calculateList();
+          const e = document.getElementById(`est-${id}`);
+          if (e)
+            e.innerText = "£" + calculateNewPrice(r.price, r.vol).toFixed(2);
+        }
+      }
+      function removeRow(id) {
+        rows = rows.filter((r) => r.id !== id);
+        renderList();
+      }
+      function renderList() {
+        const b = document.getElementById("list-body");
+        if (!b) return;
+        b.innerHTML = "";
+        rows.forEach((r) => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b border-slate-100";
+          tr.innerHTML = `<td class="p-3"><input type="text" class="input-field p-1 text-sm" value="${r.name}" oninput="updateRow(${r.id},'name',this.value)"></td><td class="p-3"><input type="number" class="input-field p-1 text-sm" value="${r.vol || ""}" oninput="updateRow(${r.id},'vol',this.value)"></td><td class="p-3"><input type="number" class="input-field p-1 text-sm" value="${r.price || ""}" oninput="updateRow(${r.id},'price',this.value)"></td><td class="p-3 font-bold text-blue-600 text-sm" id="est-${r.id}">£${calculateNewPrice(r.price, r.vol).toFixed(2)}</td><td class="p-3"><button onclick="removeRow(${r.id})" class="text-slate-300 hover:text-red-500 font-bold">✕</button></td>`;
+          b.appendChild(tr);
+        });
+        calculateList();
+      }
+      function calculateList() {
+        const old = rows.reduce((s, r) => s + r.price, 0);
+        const nxt = rows.reduce(
+          (s, r) => s + calculateNewPrice(r.price, r.vol),
+          0,
+        );
+        document.getElementById("list-total-old").innerText =
+          "£" + old.toFixed(2);
+        document.getElementById("list-total-new").innerText =
+          "£" + nxt.toFixed(2);
+      }
+      window.addEventListener("DOMContentLoaded", () => switchTab("quick"));
+    </script>
+  </body>
+</html>
